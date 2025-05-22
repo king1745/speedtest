@@ -7,8 +7,8 @@
 
 // data reported to main thread
 let testState = -1; // -1=not started, 0=starting, 1=download test, 2=ping+jitter test, 3=upload test, 4=finished, 5=abort
-let dlStatus = ""; // download speed in megabit/s with 2 decimal digits
-let ulStatus = ""; // upload speed in megabit/s with 2 decimal digits
+let dlStatus = "0.00"; // download speed in megabit/s with 2 decimal digits
+let ulStatus = "0.00"; // upload speed in megabit/s with 2 decimal digits
 let pingStatus = ""; // ping in milliseconds with 2 decimal digits
 let jitterStatus = ""; // jitter in milliseconds with 2 decimal digits
 let clientIp = ""; // client's IP address as reported by getIP.php
@@ -408,7 +408,8 @@ function dlTest(done) {
 					bonusT += bonus > 400 ? 400 : bonus;
 				}
 				//update status
-				dlStatus = ((speed * 8 * settings.overheadCompensationFactor) / (settings.useMebibits ? 1048576 : 1000000)).toFixed(2); // speed is multiplied by 8 to go from bytes to bits, overhead compensation is applied, then everything is divided by 1048576 or 1000000 to go to megabits/mebibits
+				var dlStatusOnce = ((speed * 8 * settings.overheadCompensationFactor) / (settings.useMebibits ? 1048576 : 1000000)); // speed is multiplied by 8 to go from bytes to bits, overhead compensation is applied, then everything is divided by 1048576 or 1000000 to go to megabits/mebibits
+                if (dlStatusOnce > parseFloat(dlStatus)) dlStatus = dlStatusOnce.toFixed(2);
 				if ((t + bonusT) / 1000.0 > settings.time_dl_max || failed) {
 					// test is over, stop streams and timer
 					if (failed || isNaN(dlStatus)) dlStatus = "Fail";
@@ -556,7 +557,8 @@ function ulTest(done) {
 						bonusT += bonus > 400 ? 400 : bonus;
 					}
 					//update status
-					ulStatus = ((speed * 8 * settings.overheadCompensationFactor) / (settings.useMebibits ? 1048576 : 1000000)).toFixed(2); // speed is multiplied by 8 to go from bytes to bits, overhead compensation is applied, then everything is divided by 1048576 or 1000000 to go to megabits/mebibits
+					var ulStatusOnce = ((speed * 8 * settings.overheadCompensationFactor) / (settings.useMebibits ? 1048576 : 1000000)); // speed is multiplied by 8 to go from bytes to bits, overhead compensation is applied, then everything is divided by 1048576 or 1000000 to go to megabits/mebibits
+                    if (ulStatusOnce > parseFloat(ulStatus)) ulStatus = ulStatusOnce.toFixed(2);
 					if ((t + bonusT) / 1000.0 > settings.time_ul_max || failed) {
 						// test is over, stop streams and timer
 						if (failed || isNaN(ulStatus)) ulStatus = "Fail";
